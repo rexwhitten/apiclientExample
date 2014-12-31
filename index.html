@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet"></head>
+<body>
+    <div class="container-fluid">
+    <h1>Client Test</h1>
+    
+    <div class="row">
+        <div id="user_lists" class="col-md-6">
+
+        </div>
+
+        <div id="results" class="col-md-6">
+
+        </div>
+    </div>
+    
+
+    <a href="#" id="save" class="btn btn-primary">Save</a>
+    </div>
+
+    <script src="jquery.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js" type="application/json"></script>
+    <script src="app.js"></script>
+    <script type="text/javascript">
+        var c = new Client({
+            base_path: "http://104.131.77.40/api/"
+        });
+
+        c.Get("users/john", function (data) {
+            console.log("done!");
+
+            var user = new c.UserType(data);
+
+            var $input_title = $("<input type='text'></input>");
+            $input_title.attr("id", "user_title");
+
+            $input_title.val(user.title);
+
+            var $input_descr = $("<input type='text'></input>");
+            $input_descr.attr("id", "user_descr");
+            $input_descr.val(user.description);
+
+            var $results = $('#results');
+            $results.append($input_title);
+            $results.append("</br>");
+            $results.append($input_descr);
+        });
+
+        var $save = $('#save');
+
+        $save.on("click", function () {
+            var _user = new c.UserType();
+
+            _user.title = $('#user_title').val();
+            _user.description = $('#user_descr').val();
+
+            c.Post("users/john", _user, function (msg) {
+                console.log(msg);
+            });
+
+            console.log('saved');
+        });
+
+        // User List
+        c.GetAll(function (results) {
+            var t = {};
+
+            var $ul = $('<ul class="list-group"></ul>');
+
+            for (var result_index in results) {
+                 var result = new c.UserType(results[result_index]);
+                 var $li = $('<li class="list-group-item"></li>');
+
+                 $li.append("<h5 class='text-primary'>" + result.title + "</h5>");
+                 $li.append("</br><span class='text-muted'>" + result.description + "</span>");
+
+                 $ul.append($li);
+            }
+
+            $('#user_lists').append($ul);
+        });
+
+    </script>
+</body>
+</html>
